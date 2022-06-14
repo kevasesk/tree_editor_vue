@@ -1,8 +1,12 @@
 <template>
     <ul>
-      <ListItem label="1" :children="[1,2]"/>
-      <ListItem label="2" :children="[3,4]"/>
-      <ListItem label="3" :children="[5,6]"/>
+      <ListItem
+          v-for="item in this.$store.state.tree"
+          :label="item.label"
+          :id="item.id"
+          :key="item.id"
+          :children="item.children"
+      />
     </ul>
 </template>
 
@@ -56,7 +60,7 @@ li{
   padding: 5px;
 }
 .child.closed{
-  display:none;
+  display: none;
 }
 .item.moving{
   background-color: green;

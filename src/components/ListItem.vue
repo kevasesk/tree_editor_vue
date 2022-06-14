@@ -2,23 +2,22 @@
   <li
       class="item"
       :class="this.down ? 'moving' : ''"
-      @click="switchTrigger"
+      :id="this.id"
       @mousedown="mouseDownTrigger"
       @mouseup="mouseUpTrigger"
-      @mousemove="mouseMoveTrigger($event)"
   >
-    <i v-if="this.children" class="arrow" :class="this.open ? 'down' : 'right'"></i>  {{this.label}}
+    <i @click="switchTrigger" v-if="this.children" class="arrow" :class="this.open ? 'down' : 'right'"></i>  {{this.label}}
   </li>
   <ul class="child" :class="this.open ? '' : 'closed'">
     <template v-if="children">
-      <ListItem v-for="child in this.children" :key="child" :label="child"/>
+      <ListItem v-for="child in this.children" :key="child" :label="child.label"/>
     </template>
   </ul>
 </template>
 
 <script>
 export default {
-  props:['label', 'children'],
+  props:['label', 'children', 'id'],
   data(){
     return {
       open: false,
@@ -32,19 +31,27 @@ export default {
       }
     },
     mouseDownTrigger(){
-      this.down = true;
+      this.$store.state.moving = true;
+      this.$store.state.movingElement = this.label;
     },
     mouseUpTrigger(){
-      this.down = false;
+      var self = this;
+      this.$store.state.moving = false;
+      this.$store.state.movingElement = null;
+
+      var items = document.querySelectorAll('.item');
+      var insertAfter = null;
+      items.forEach(function(value){
+        if(value.getBoundingClientRect().top){//for visible only
+          if(self.$store.state.clientY > value.getBoundingClientRect().top){
+            insertAfter = value.id;
+          }
+        }
+      });
+      console.log(insertAfter);//eugenesm
+      //this.$store.state.tree.push(insertAfter);//TODO insret after this id
+      //TODO remove old position
     },
-    mouseMoveTrigger(event){
-      if(this.down){
-        event.target.style.left = event.clientX - 10 + 'px';
-        event.target.style.top = event.clientY - 10 + 'px';
-      }
-
-
-    }
   }
 
 }
