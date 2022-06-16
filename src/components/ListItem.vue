@@ -1,23 +1,34 @@
 <template>
   <li
       class="item"
-      :class="this.down ? 'moving' : ''"
+      :class="getClasses()"
       :id="this.id"
-      @mousedown="mouseDownTrigger"
-      @mouseup="mouseUpTrigger"
   >
-    <i @click="switchTrigger" v-if="this.children" class="arrow" :class="this.open ? 'down' : 'right'"></i>  {{this.label}}
+    <i
+        @click="switchTrigger"
+        v-if="this.children && this.children.length > 0 && !this.shadow"
+        class="arrow"
+        :class="this.open ? 'down' : 'right'"
+    ></i>
+    <span v-if="!this.shadow" class="label">
+       {{this.label}}
+    </span>
   </li>
   <ul class="child" :class="this.open ? '' : 'closed'">
     <template v-if="children">
-      <ListItem v-for="child in this.children" :key="child" :label="child.label"/>
+      <ListItem
+          v-for="child in this.children"
+          :key="child"
+          :label="child.label"
+          :children="child.children"
+      />
     </template>
   </ul>
 </template>
 
 <script>
 export default {
-  props:['label', 'children', 'id'],
+  props:['label', 'children', 'id', 'shadow'],
   data(){
     return {
       open: false,
@@ -25,14 +36,20 @@ export default {
     }
   },
   methods:{
+    getClasses(){
+      var classes = [];
+      if(this.down){
+        classes.push('moving');
+      }
+      if(this.shadow){
+        classes.push('shadow');
+      }
+      return classes.join(' ');
+    },
     switchTrigger(){
       if(this.children){
         this.open = !this.open;
       }
-    },
-    mouseDownTrigger(){
-      this.$store.state.moving = true;
-      this.$store.state.movingElement = this.label;
     },
     mouseUpTrigger(){
       var self = this;
@@ -56,3 +73,36 @@ export default {
 
 }
 </script>
+<style>
+/* arrow styles */
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+/* arrow styles end */
+
+
+
+</style>
