@@ -35,7 +35,7 @@ export default {
       this.$store.state.fly = {
         hidden: false,
         id: event.target.id,
-        label: event.target.id // TODO get label from element
+        label: event.target.id // TODO get label from elementt
       }
       this.$store.state.replace = {
         hidden: false
